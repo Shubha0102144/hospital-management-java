@@ -39,6 +39,7 @@ public class UserController {
     @ApiResponse(responseCode = "400", description = "Validation failed", content = @Content)
     @ApiResponse(responseCode = "409", description = "Email already registered", content = @Content)
     public UserResponse register(@Valid @RequestBody RegisterUserRequest request) {
+        System.out.println("registered");
         return userService.register(request);
     }
 }

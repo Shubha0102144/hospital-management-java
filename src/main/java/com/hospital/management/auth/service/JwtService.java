@@ -55,7 +55,7 @@ public class JwtService {
     public Set<Role> extractRoles(Claims claims) {
         Object rolesClaim = claims.get("roles");
         if (!(rolesClaim instanceof List<?> roles)) {
-            return Set.of();
+            return Set.of();//empty set
         }
 
         return roles.stream()
