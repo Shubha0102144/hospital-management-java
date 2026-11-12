@@ -8,7 +8,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 public class DoctorDocument {
 
     @Id
-    private int id;
+    private String id;
 
     private String name;
     
@@ -18,43 +18,43 @@ public class DoctorDocument {
     private String specialty;
     private String department;
     
-    public int getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(String id) {
         this.id = id;
     }
 
-    public String getFullName() {
+    public String getName() {
         return name;
     }
 
-    public void setFullName(String name) {
+    public void setName(String name) {
         this.name = name;
     }
 
-    public String getLicenceNumber() {
+    public String getLicencenumber() {
         return licencenumber;
     }
 
-    public void setLicenceNumber(String licencenumber) {
+    public void setLicencenumber(String licencenumber) {
         this.licencenumber = licencenumber;
     }
 
-    public String getspecialty() {
+    public String getSpecialty() {
         return specialty;
     }
 
-    public void setspecialty(String specialty) {
+    public void setSpecialty(String specialty) {
         this.specialty = specialty;
     }
 
-    public String getdepartment() {
+    public String getDepartment() {
         return department;
     }
 
-    public void setdepartment(String department) {
+    public void setDepartment(String department) {
         this.department = department;
     }
 

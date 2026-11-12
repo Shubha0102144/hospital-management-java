@@ -7,9 +7,9 @@ import java.util.Optional;
 
 public interface DoctorRepository extends MongoRepository<DoctorDocument, String> {
 
-    Optional<DoctorDocument> findByLicenceNumber(String licencenumber);
+    Optional<DoctorDocument> findByLicencenumber(String licencenumber);
 
-     boolean existsByLicenceNumber(String licencenumber) ;
-
+     boolean existsByLicencenumber(String licencenumber) ;
+     boolean existsById(String id);
      
 }

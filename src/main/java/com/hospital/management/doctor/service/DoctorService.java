@@ -23,19 +23,19 @@ public class DoctorService {
 
     public DoctorResponse register(DoctorRegister request) {
 
-        // int normalize=licencenumber.trim();
+        
         String normalizedLicenceNumber = normalizeLicence(request.licencenumber());
 
-        if (doctorRepository.existsByLicenceNumber(normalizedLicenceNumber)) {
+        if (doctorRepository.existsByLicencenumber(normalizedLicenceNumber)) {
             throw new ConflictException("number is already registered");
         }
 
         DoctorDocument doctor = new DoctorDocument();
 
-        doctor.setFullName(request.name().trim());
-        doctor.setLicenceNumber(request.licencenumber());
-        doctor.setspecialty(request.speciality());
-        doctor.setdepartment(request.department());
+        doctor.setName(request.name().trim());
+        doctor.setLicencenumber(request.licencenumber());
+        doctor.setSpecialty(request.speciality());
+        doctor.setDepartment(request.department());
 
         DoctorDocument saved = doctorRepository.save(doctor);
         return doctorMapper.toResponse(saved);

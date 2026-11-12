@@ -34,16 +34,16 @@ class DoctorServiceTest {
     @Test
     void registerCreatesMemberWithNormalizedLicenceNumber() {
         DoctorRegister request = new DoctorRegister(
-            
+
                 "abc ",
                 "abc",
                 "dermatologist",
                 "xyz");
 
-        when(doctorRepository.existsByLicenceNumber("abc")).thenReturn(false);
+        when(doctorRepository.existsByLicencenumber("abc")).thenReturn(false);
         when(doctorRepository.save(any(DoctorDocument.class))).thenAnswer(invocation -> {
             DoctorDocument document = invocation.getArgument(0);
-            document.setId(1);
+            document.setId("1");
             return document;
         });
 
@@ -54,10 +54,10 @@ class DoctorServiceTest {
         verify(doctorRepository).save(captor.capture());
 
         DoctorDocument saved = captor.getValue();
-        assertThat(saved.getLicenceNumber()).isEqualTo("abc");
-        assertThat(saved.getFullName()).isEqualTo("abc");
-        assertThat(saved.getspecialty()).isEqualTo("dermatologist");
-        assertThat(saved.getdepartment()).isEqualTo("xyz");
+        assertThat(saved.getLicencenumber()).isEqualTo("abc");
+        assertThat(saved.getName()).isEqualTo("abc");
+        assertThat(saved.getSpecialty()).isEqualTo("dermatologist");
+        assertThat(saved.getDepartment()).isEqualTo("xyz");
 
         assertThat(response.name()).isEqualTo("abc");
         assertThat(response.licencenumber()).isEqualTo("abc");
@@ -66,7 +66,7 @@ class DoctorServiceTest {
 
     @Test
     void registerRejectsDuplicateLicenceNumber() {
-        when(doctorRepository.existsByLicenceNumber("hsghas")).thenReturn(true);
+        when(doctorRepository.existsByLicencenumber("hsghas")).thenReturn(true);
 
         assertThatThrownBy(() -> doctorService.register(
                 new DoctorRegister("abc", "hsghas", "Alex Reader", "dhsgds")))
