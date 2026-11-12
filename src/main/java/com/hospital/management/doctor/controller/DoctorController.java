@@ -56,8 +56,5 @@ public class DoctorController {
             return null;
         }
     }
-    @GettMapping(value = "doctors",consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    @PreAuthorize("hasAnyRole('ADMIN', 'DOCTOR','PATIENT')")
-    @Operation(summary = "view a doctor", description = "view doctor details.")
-    public DoctorResponse 
+   
 }
