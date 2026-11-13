@@ -87,7 +87,7 @@ class HospitalApiIntegrationTest extends MongoTestcontainersConfig {
     userRepository.save(patientUser);
 
     PatientDocument patient = new PatientDocument();
-    patient.setFullName("Doctor");
+    patient.setFullName("Seed Patient");
     patient.setPrimaryDoctorName("Dr. Seed");
     patient.setMedicalRecordNumber("MRN-100001");
     patient.setDateOfBirth(LocalDate.of(1990, 1, 1));
@@ -98,7 +98,7 @@ class HospitalApiIntegrationTest extends MongoTestcontainersConfig {
     patientId = patientRepository.save(patient).getId();
 
     DoctorDocument doctor = new DoctorDocument();
-    doctor.setfullName("Seed Patient");
+    doctor.setfullName("doctor");
     doctor.setLicencenumber("abc");
     doctor.setSpecialty("doc");
     doctor.setDepartment("hdbdb");
