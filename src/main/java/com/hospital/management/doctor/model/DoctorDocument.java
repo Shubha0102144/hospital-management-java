@@ -10,14 +10,14 @@ public class DoctorDocument {
     @Id
     private String id;
 
-    private String name;
-    
+    private String fullName;
+
     @Indexed(unique = true)
-    private String licencenumber;
-    
+    private String licenceNumber;
+
     private String specialty;
     private String department;
-    
+
     public String getId() {
         return id;
     }
@@ -26,20 +26,20 @@ public class DoctorDocument {
         this.id = id;
     }
 
-    public String getName() {
-        return name;
+    public String getfullName() {
+        return fullName;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setfullName(String fullName) {
+        this.fullName = fullName;
     }
 
-    public String getLicencenumber() {
-        return licencenumber;
+    public String getlicenceNumber() {
+        return licenceNumber;
     }
 
-    public void setLicencenumber(String licencenumber) {
-        this.licencenumber = licencenumber;
+    public void setLicencenumber(String licenceNumber) {
+        this.licenceNumber = licenceNumber;
     }
 
     public String getSpecialty() {

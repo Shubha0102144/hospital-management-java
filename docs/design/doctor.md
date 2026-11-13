@@ -1,31 +1,36 @@
-Doctor Fields:
-full name,
-specialty,
-license number,
-department
+## task1
 
-indexes and uniqueness rules:
-- An unique id is generated for every doctor.
-- Full name is required.
-- Specialty is required 
-- License number is required.
-- Two doctors cannot share the same license number. 
-- A refused attempt leaves the directory unchanged.
-- A missing name, specialty, license number, or department, or a value that is too long, is refused, and the reason names the problem.
+## Add a doctor with fields
 
-Relationship to Patient
-- Patients currently store primaryDoctorName as free text(along with doctor id for reference).
-- A doctor can view and update patient details.
-- A doctor and an administrator can each open any patient chart.
-- A doctor can see their own upcoming appointments.
--  A doctor can remove a chart with no upcoming appointment
+- Full name (required)
+- Specialty (required)
+- License number (required)
+- Department (required)
 
+## Requirement
 
-API sketch
-path:http://localhost:8081/api/v1/users
-- post ->to register
-- get ->to view pateint detials
-- put ->to update patient chart
-- delete ->to remove a chart
+The hospital keeps a doctor and can find that same doctor later.
 
+## validation Rules
 
+- Full name is required. After trimming extra spaces, it is between 2 and 160 characters.
+- Specialty is required and is between 1 and 80 characters.
+- License number is required and is between 1 and 40 characters.
+- Two doctors cannot share the same license number. Comparison ignores letter case and extra spaces.
+- Department is required and is between 1 and 80 characters.
+
+## uniqueness rules
+
+- Licence number should be unique for every doctor
+- A second doctor with the same license number is refused, and the first record is unchanged.
+- unique ID is generated for reference after registering the doctor
+
+## API sketch
+
+- path- /api/v1/doctors
+
+200- doctor registered
+400- Validation failed
+401- Missing or invalid token
+404- Doctor not found
+409- Licence number conflict

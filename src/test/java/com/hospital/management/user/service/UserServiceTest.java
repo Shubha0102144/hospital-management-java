@@ -74,10 +74,10 @@ class UserServiceTest {
 
     @Test
     void registerRejectsDuplicateEmail() {
-        when(userRepository.existsByEmailIgnoreCase("alex@example.com")).thenReturn(true);
+        when(userRepository.existsByEmailIgnoreCase("alex@mple.com")).thenReturn(true);
 
         assertThatThrownBy(() -> userService.register(
-                new RegisterUserRequest("alex@example.com", "Password1", "Alex Reader")))
+                new RegisterUserRequest("alex@mple.com", "Password1", "Alex Reader")))
                 .isInstanceOf(ConflictException.class)
                 .hasMessageContaining("already registered");
     }

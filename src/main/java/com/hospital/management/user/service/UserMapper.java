@@ -16,8 +16,8 @@ public class UserMapper {
                 document.getRoles(),
                 document.isEnabled(),
                 document.getCreatedAt()
-                
-               );
-         
+
+        );
+
     }
 }

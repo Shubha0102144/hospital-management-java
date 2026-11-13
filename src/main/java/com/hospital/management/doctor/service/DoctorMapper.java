@@ -10,11 +10,13 @@ public class DoctorMapper {
     public DoctorResponse toResponse(DoctorDocument document) {
         return new DoctorResponse(
                 document.getId(),
-                document.getName(),
-                document.getLicencenumber(),
+                document.getfullName(),
+                document.getlicenceNumber(),
                 document.getSpecialty(),
                 document.getDepartment()
 
         );
+
     }
+
 }

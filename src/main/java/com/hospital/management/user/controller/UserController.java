@@ -30,21 +30,13 @@ public class UserController {
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
-    @Operation(
-            summary = "Register a new patient",
-            description = "Public endpoint that creates a PATIENT account. Email must be unique."
-    )
-    @ApiResponse(responseCode = "201", description = "User registered",
-            content = @Content(schema = @Schema(implementation = UserResponse.class)))
+    @Operation(summary = "Register a new patient", description = "Public endpoint that creates a PATIENT account. Email must be unique.")
+    @ApiResponse(responseCode = "201", description = "User registered", content = @Content(schema = @Schema(implementation = UserResponse.class)))
     @ApiResponse(responseCode = "400", description = "Validation failed", content = @Content)
     @ApiResponse(responseCode = "409", description = "Email already registered", content = @Content)
     public UserResponse register(@Valid @RequestBody RegisterUserRequest request) {
-        try {
-            System.out.println("registered");
-            return userService.register(request);
-        } catch (Exception e) {
-            System.err.println(e);
-            return null;
-        }
+
+        return userService.register(request);
+
     }
 }

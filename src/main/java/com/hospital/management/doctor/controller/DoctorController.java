@@ -32,29 +32,24 @@ public class DoctorController {
         this.doctorService = doctorService;
     }
 
-    @PostMapping(value = "doctors",consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/doctors", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize("hasAnyRole('ADMIN', 'DOCTOR')")
     @Operation(summary = "add a doctor", description = "Fully replaces mutable doctpr fields. Requires ADMIN or existing DOCTOR role.")
 
-    @ApiResponse(responseCode = "200", description = "Patient updated", content = @Content(schema = @Schema(implementation = DoctorResponse.class)))
+    @ApiResponse(responseCode = "200", description = "doctor registered", content = @Content(schema = @Schema(implementation = DoctorResponse.class)))
 
     @ApiResponse(responseCode = "400", description = "Validation failed", content = @Content)
 
     @ApiResponse(responseCode = "401", description = "Missing or invalid token", content = @Content)
 
-    @ApiResponse(responseCode = "403", description = "Insufficient role", content = @Content)
+    @ApiResponse(responseCode = "404", description = "Doctor not found", content = @Content)
 
-    @ApiResponse(responseCode = "404", description = "Patient not found", content = @Content)
-
-    @ApiResponse(responseCode = "409", description = "Medical record number conflict", content = @Content)
+    @ApiResponse(responseCode = "409", description = "Licence number conflict", content = @Content)
 
     public DoctorResponse register(@Valid @RequestBody DoctorRegister request) {
-        try {
-            return doctorService.register(request);
-        } catch (Exception e) {
-            log.error("Failed to register", e);
-            return null;
-        }
+
+        return doctorService.register(request);
+
     }
-   
 }
+

@@ -5,7 +5,6 @@ import com.hospital.management.doctor.dto.DoctorResponse;
 import com.hospital.management.doctor.model.DoctorDocument;
 import com.hospital.management.doctor.repository.DoctorRepository;
 import com.hospital.management.exception.ConflictException;
-
 import java.util.Locale;
 import org.springframework.stereotype.Service;
 
@@ -23,25 +22,26 @@ public class DoctorService {
 
     public DoctorResponse register(DoctorRegister request) {
 
-        
-        String normalizedLicenceNumber = normalizeLicence(request.licencenumber());
+        String normalizedLicenceNumber = normalizeLicence(request.licenceNumber());
 
-        if (doctorRepository.existsByLicencenumber(normalizedLicenceNumber)) {
+        if (doctorRepository.existsByLicenceNumber(normalizedLicenceNumber)) {
             throw new ConflictException("number is already registered");
         }
 
         DoctorDocument doctor = new DoctorDocument();
 
-        doctor.setName(request.name().trim());
-        doctor.setLicencenumber(request.licencenumber());
+        doctor.setfullName(request.fullName().trim());
+        doctor.setLicencenumber(request.licenceNumber());
         doctor.setSpecialty(request.speciality());
         doctor.setDepartment(request.department());
 
         DoctorDocument saved = doctorRepository.save(doctor);
+        System.out.println("registered");
         return doctorMapper.toResponse(saved);
     }
 
     public String normalizeLicence(String licenceNumber) {
         return licenceNumber.trim().toLowerCase(Locale.ROOT);
     }
+
 }
