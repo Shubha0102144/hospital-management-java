@@ -33,7 +33,7 @@ import java.util.UUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -334,6 +334,61 @@ class HospitalApiIntegrationTest extends MongoTestcontainersConfig {
   }
 
   @Test
+  void adminCanUpdateADoctor() throws Exception {
+    String adminToken = login("admin@hospital.local", "ChangeMe123!");
+
+    mockMvc.perform(put("/api/v1/doctors/{id}", doctorId)
+        .header(HttpHeaders.AUTHORIZATION, "Bearer " + adminToken)
+        .contentType(MediaType.APPLICATION_JSON)
+        .content(validUpdateDoctorPayload()))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.fullName").value("doc"))
+        .andExpect(jsonPath("$.licenceNumber").value("lc2"));
+
+    assertThat(doctorRepository.findById(doctorId)).isPresent();
+    assertThat(doctorRepository.findById(doctorId).orElseThrow().getfullName()).isEqualTo("doc");
+    assertThat(doctorRepository.findById(doctorId).orElseThrow().getlicenceNumber()).isEqualTo("lc2");
+
+  }
+
+  @Test
+  void registeredDoctorCanUpdateADoctor() throws Exception {
+    String doctorToken = login("doctor@hospital.local", "DoctorPass1");
+
+    mockMvc.perform(put("/api/v1/doctors/{id}", doctorId)
+        .header(HttpHeaders.AUTHORIZATION, "Bearer " + doctorToken)
+        .contentType(MediaType.APPLICATION_JSON)
+        .content(validUpdateDoctorPayload()))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.fullName").value("doc"))
+        .andExpect(jsonPath("$.licenceNumber").value("lc2"));
+
+    assertThat(doctorRepository.findById(doctorId)).isPresent();
+    assertThat(doctorRepository.findById(doctorId).orElseThrow().getfullName()).isEqualTo("doc");
+    assertThat(doctorRepository.findById(doctorId).orElseThrow().getlicenceNumber()).isEqualTo("lc2");
+
+  }
+
+  @Test
+  void updateDoctorForbidsPatientOrUserRole() throws Exception {
+    String patientToken = login("patient@hospital.local", "PatientPass1");
+
+    mockMvc.perform(put("/api/v1/doctors/{id}", doctorId)
+        .header(HttpHeaders.AUTHORIZATION, "Bearer " + patientToken)
+        .contentType(MediaType.APPLICATION_JSON)
+        .content(validUpdateDoctorPayload()))
+        .andExpect(status().isForbidden());
+  }
+
+  @Test
+  void updateDoctorRequiresAuthentication() throws Exception {
+    mockMvc.perform(put("/api/v1/doctors/{id}", doctorId)
+        .contentType(MediaType.APPLICATION_JSON)
+        .content(validUpdateDoctorPayload()))
+        .andExpect(status().isUnauthorized());
+  }
+
+  @Test
   void updatePatientRequiresAuthentication() throws Exception {
     mockMvc.perform(put("/api/v1/patients/{id}", patientId)
         .contentType(MediaType.APPLICATION_JSON)
@@ -393,6 +448,17 @@ class HospitalApiIntegrationTest extends MongoTestcontainersConfig {
           "phone": "+15551230001",
           "bloodGroup": "O+",
           "notes": "Updated by integration test"
+        }
+        """;
+  }
+
+  private String validUpdateDoctorPayload() {
+    return """
+        {
+          "fullName": "doc",
+          "licenceNumber":"lc2",
+          "speciality": "xyz",
+          "department": "xy"
         }
         """;
   }

@@ -35,6 +35,7 @@ public class PatientService {
             throw new BadRequestException("Date of birth cannot be in the future");
         }
 
+
         patient.setFullName(request.fullName().trim());
         patient.setPrimaryDoctorName(request.primaryDoctorName().trim());
         patient.setMedicalRecordNumber(medicalRecordNumber);
@@ -60,4 +61,7 @@ public class PatientService {
         }
         return value.trim();
     }
+
+
+    
 }

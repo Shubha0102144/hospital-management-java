@@ -25,6 +25,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import com.hospital.management.doctor.repository.DoctorRepository;
 import com.hospital.management.doctor.service.DoctorMapper;
 import com.hospital.management.doctor.service.DoctorService;
+import com.hospital.management.exception.ConflictException;
 import com.hospital.management.exception.ResourceNotFoundException;
 import com.hospital.management.doctor.dto.DoctorRegister;
 import com.hospital.management.doctor.dto.DoctorResponse;
@@ -171,6 +172,57 @@ class DoctorServiceTest {
         assertEquals("dermatologist", search.getContent().get(0).speciality());
         assertEquals("xyz", search.getContent().get(0).department());
 
+    }
+
+    @Test
+    void updateReplacesDoctorFields() {
+
+        DoctorDocument doctor = new DoctorDocument();
+        doctor.setId("doc-1");
+        doctor.setfullName("abc");
+        doctor.setLicencenumber("lc12");
+        doctor.setSpecialty("health");
+        doctor.setDepartment("dept-1");
+
+        DoctorRegister request = new DoctorRegister("xyz", "lc12", "health", "dept-1");
+        when(doctorRepository.findById("doc-1")).thenReturn(Optional.of(doctor));
+        when(doctorRepository.existsByLicenceNumberAndIdNot("lc12", "doc-1")).thenReturn(false);
+        when(doctorRepository.save(any(DoctorDocument.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        DoctorResponse response = doctorService.updateDoctorDetails("doc-1", request);
+
+        assertThat(response.fullName()).isEqualTo("xyz");
+        assertThat(response.licenceNumber()).isEqualTo("lc12");
+        assertThat(response.speciality()).isEqualTo("health");
+        assertThat(response.department()).isEqualTo("dept-1");
+
+    }
+
+    @Test
+    void updateFailsForUnregisteredDoctor() {
+        when(doctorRepository.findById("invalidId")).thenReturn(Optional.empty());
+        DoctorRegister request = new DoctorRegister("xyz", "lc12", "health", "dept-1");
+
+        assertThatThrownBy(() -> doctorService.updateDoctorDetails("invalidId", request))
+                .isInstanceOf(ResourceNotFoundException.class);
+    }
+
+    @Test
+    void updateFailssWhenLicenceNumberConflicts() {
+        DoctorDocument existing = new DoctorDocument();
+        existing.setId("doc1");
+        existing.setLicencenumber("lc1");
+        existing.setSpecialty("ab");
+        existing.setDepartment("xyz");
+
+        when(doctorRepository.findById("doc1")).thenReturn(Optional.of(existing));
+        when(doctorRepository.existsByLicenceNumberAndIdNot("lc2", "doc1")).thenReturn(true);
+
+        DoctorRegister request = new DoctorRegister("xyz", "lc2", "health", "dept-1");
+
+        assertThatThrownBy(() -> doctorService.updateDoctorDetails("doc1", request))
+                .isInstanceOf(ConflictException.class)
+                .hasMessageContaining("Licence number is already assigned to another doctor");
     }
 
 }

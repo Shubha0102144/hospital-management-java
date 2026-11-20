@@ -20,4 +20,6 @@ public interface DoctorRepository extends MongoRepository<DoctorDocument, String
 
     boolean existsByFullName(String fullName);
 
+    boolean existsByLicenceNumberAndIdNot(String licenceNumber, String id);
+
 }

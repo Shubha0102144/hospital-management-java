@@ -10,4 +10,5 @@ public interface PatientRepository extends MongoRepository<PatientDocument, Stri
     Optional<PatientDocument> findByMedicalRecordNumber(String medicalRecordNumber);
 
     boolean existsByMedicalRecordNumberAndIdNot(String medicalRecordNumber, String id);
+    
 }
