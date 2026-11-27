@@ -1,13 +1,11 @@
 package com.hospital.management.doctor.model;
 
-import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document(collection = "doctors")
 public class DoctorDocument {
 
-    @Id
     private String id;
 
     private String fullName;
@@ -15,7 +13,7 @@ public class DoctorDocument {
     @Indexed(unique = true)
     private String licenceNumber;
 
-    private String specialty;
+    private String speciality;
     private String department;
 
     public String getId() {
@@ -42,12 +40,12 @@ public class DoctorDocument {
         this.licenceNumber = licenceNumber;
     }
 
-    public String getSpecialty() {
-        return specialty;
+    public String getSpeciality() {
+        return speciality;
     }
 
-    public void setSpecialty(String specialty) {
-        this.specialty = specialty;
+    public void setSpeciality(String specialty) {
+        this.speciality = specialty;
     }
 
     public String getDepartment() {

@@ -201,3 +201,120 @@ A doctor or an administrator can remove a doctor who is not the primary doctor o
 400 - validation failed
 403- Is unauthorized
 401 - Missing or invalid token
+
+# task6
+
+# tie-patients-to-doctors
+
+Clinicians need a patient chart to name a real doctor from the directory, so a rename or a correction shows up on every chart that uses that doctor.
+
+## Requirement
+
+A chart names a doctor the directory already knows. When that doctor's name changes, every chart that names them shows the new name. Charts already on file remain readable.
+
+## Information
+
+Each chart remembers which directory doctor is the primary doctor, and shows that doctor's current name.
+
+## Who may do this
+
+This changes the rules for registering a chart and for updating a chart.
+
+- Doctor and administrator: may register or update a chart so that it names a known doctor
+- Patient: no
+- Anyone who is not signed in: no
+
+## Rules
+
+- Registering a chart, or changing a chart, requires a primary doctor that can already be found in the directory.
+- An unknown doctor is refused, and the chart is left unchanged. A new chart is not created.
+- When a doctor's name is corrected, every chart that names that doctor shows the corrected name.
+- Charts already on file before this capability exists stay available. Each of them still shows a primary doctor name a reader can recognize.
+- Removing a doctor is still refused while any chart names that doctor.
+
+# task7
+
+# Register a patient chart
+
+A doctor or an administrator needs to open a chart for a patient. Registering for an account creates a login only. A chart is a separate record.
+
+## Requirement
+
+A doctor or an administrator can open a chart for an existing patient account. The chart can be found later with the details that were saved.
+
+## Information
+
+- The patient account the chart belongs to (required)
+- Full name (required)
+- Primary doctor (required). Once doctors are part of the directory, the chart names a doctor the directory already knows.
+- Medical record number (required)
+- Date of birth (required)
+- Gender (required): female, male, other, or unknown
+- Phone (optional)
+- Blood group (optional)
+- Notes (optional)
+
+## Who may do this
+
+- Doctor and administrator: yes
+- Patient: no
+- Anyone who is not signed in: no
+
+## Rules
+
+- The chart belongs to a patient account that already exists. One patient account has at most one chart.
+- Full name is required and is between 2 and 160 characters.
+- Primary doctor is required. The displayed doctor name is between 1 and 160 characters.
+- Medical record number is required and looks like `MRN-100001`: the letters MRN, a hyphen, and six digits. Two charts cannot share the same medical record number. Comparison ignores letter case and spaces.
+- Date of birth is required and is not in the future.
+- Gender is required and is one of female, male, other, or unknown.
+- Phone, when present, is between 7 and 20 characters and uses digits, spaces, or the characters `+`, `(`, `)`, `.`, and `-`.
+- Blood group, when present, is one of A+, A-, B+, B-, AB+, AB-, O+, or O-.
+- Notes, when present, are at most 2,000 characters.
+- A refused attempt does not open a chart.
+
+## API sketch
+
+- path- /api/v1/patients
+- method->Post
+
+200- patient added
+400 - validation failed
+403- Is unauthorized
+401 - Missing or invalid token
+
+# task8
+
+# View a patient chart
+
+A patient needs to read their own chart. A doctor or an administrator needs to open any chart.
+
+## Requirement
+
+A patient can open only the chart that belongs to their account. A doctor or an administrator can open any chart that is already on file.
+
+## Information
+
+The view shows the patient name, primary doctor, medical record number, date of birth, gender, phone, blood group, and notes. Empty optional fields are shown as empty.
+
+## Who may do this
+
+- Patient: yes, for their own chart only
+- Doctor and administrator: yes, for any chart
+- Anyone who is not signed in: no
+
+## Rules
+
+- The chart must already exist. An unknown chart is refused.
+- A patient who opens a chart that belongs to someone else is refused.
+- A patient with no chart is told that no chart was found.
+- Opening a chart does not change it.
+
+- path- /api/v1/patients/{id}
+- method->get
+
+200- patient found
+400 - validation failed
+403- Is unauthorized
+401 - Missing or invalid token
+404-patient not found

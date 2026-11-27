@@ -1,14 +1,21 @@
 package com.hospital.management.doctor.service;
 
+import com.hospital.management.doctor.dto.DoctorPatientResponse;
 import com.hospital.management.doctor.dto.DoctorRegister;
 import com.hospital.management.doctor.dto.DoctorResponse;
-import com.hospital.management.doctor.dto.DoctorUpdateRequest;
 import com.hospital.management.doctor.model.DoctorDocument;
 import com.hospital.management.doctor.repository.DoctorRepository;
+import com.hospital.management.patient.dto.PatientDoctorResponse;
+import com.hospital.management.patient.model.PatientDocument;
+import com.hospital.management.patient.model.PatientDoctorDocument;
+import com.hospital.management.patient.repository.PatientDoctorRespsoitory;
 import com.hospital.management.patient.repository.PatientRepository;
+import com.hospital.management.patient.service.PatientMapper;
 import com.hospital.management.exception.ConflictException;
 import com.hospital.management.exception.ResourceNotFoundException;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 import org.springframework.data.domain.Page;
@@ -22,15 +29,20 @@ public class DoctorService {
     private final DoctorRepository doctorRepository;
     private final DoctorMapper doctorMapper;
     private final PatientRepository patientRepository;
+    private final PatientMapper patientMapper;
+    private final PatientDoctorRespsoitory patientDoctorRespsoitory;
 
     public DoctorService(DoctorRepository doctorRepository, DoctorMapper doctorMapper,
-            PatientRepository patientRepository) {
+            PatientRepository patientRepository, PatientMapper patientMapper,
+            PatientDoctorRespsoitory patientDoctorRespsoitory) {
         this.doctorRepository = doctorRepository;
         this.doctorMapper = doctorMapper;
         this.patientRepository = patientRepository;
+        this.patientMapper = patientMapper;
+        this.patientDoctorRespsoitory = patientDoctorRespsoitory;
     }
 
-    public DoctorResponse register(DoctorRegister request) {
+    public DoctorPatientResponse register(DoctorRegister request) {
 
         String normalizedLicenceNumber = normalizeLicence(request.licenceNumber());
 
@@ -42,11 +54,11 @@ public class DoctorService {
 
         doctor.setfullName(request.fullName().trim());
         doctor.setLicencenumber(normalizedLicenceNumber);
-        doctor.setSpecialty(request.speciality());
+        doctor.setSpeciality(request.speciality());
         doctor.setDepartment(request.department());
 
         DoctorDocument saved = doctorRepository.save(doctor);
-        System.out.println("registered");
+
         return doctorMapper.toResponse(saved);
     }
 
@@ -54,16 +66,26 @@ public class DoctorService {
 
         DoctorDocument doctor = doctorRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Doctor not found: " + id));
-        return doctorMapper.toResponse(doctor);
+
+        List<PatientDoctorDocument> doc = patientDoctorRespsoitory.findByDoctorId(doctor.getId());
+
+        List<PatientDoctorResponse> patients = new ArrayList<>();
+
+        for (PatientDoctorDocument patient : doc) {
+            PatientDocument p = patientRepository.findById(patient.getPatientId())
+                    .orElseThrow(() -> new ResourceNotFoundException("patient not found: " + patient.getPatientId()));
+            patients.add(patientMapper.toResponse(p));
+        }
+        return doctorMapper.toResponse(doctor, patients);
     }
 
-    public Page<DoctorResponse> searchDoctorsByName(String fullName, Pageable page) {
+    public Page<DoctorPatientResponse> searchDoctorsByName(String fullName, Pageable page) {
 
         return doctorRepository.findByFullNameContainingOrderByFullNameAsc(fullName, page)
                 .map(doctorMapper::toResponse);
     }
 
-    public DoctorResponse updateDoctorDetails(String id, DoctorUpdateRequest request) {
+    public DoctorPatientResponse updateDoctorDetails(String id, DoctorRegister request) {
 
         DoctorDocument doctor = doctorRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Doctor not found: " + id));
@@ -78,16 +100,16 @@ public class DoctorService {
         }
 
         if (request.fullName() != null) {
-
             doctor.setfullName(request.fullName().trim());
         }
         if (request.speciality() != null) {
-            doctor.setSpecialty(request.speciality().trim());
+            doctor.setSpeciality(request.speciality().trim());
         }
         if (request.department() != null) {
             doctor.setDepartment(request.department().trim());
         }
         DoctorDocument saved = doctorRepository.save(doctor);
+
         return doctorMapper.toResponse(saved);
     }
 
@@ -95,10 +117,7 @@ public class DoctorService {
         DoctorDocument doctor = doctorRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Doctor not found: " + id));
 
-        String doctorname = doctor.getfullName();
-        if (patientRepository.existsByPrimaryDoctorName(doctorname)) {
-            throw new ConflictException("doctor has been assigned to a patient");
-        }
+        List<PatientDoctorDocument> doctorAssigned = patientDoctorRespsoitory.findByDoctorId(id);
 
         doctorRepository.deleteById(id);
         return doctor.getfullName();

@@ -97,7 +97,6 @@ public class V002SeedDataChangelog {
         Instant now = Instant.now();
         PatientDocument document = new PatientDocument();
         document.setFullName(fullName);
-        document.setPrimaryDoctorName(primaryDoctorName);
         document.setMedicalRecordNumber(medicalRecordNumber);
         document.setDateOfBirth(dateOfBirth);
         document.setGender(gender);

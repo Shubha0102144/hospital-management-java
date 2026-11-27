@@ -17,7 +17,10 @@ public class PatientDocument {
 
     private String fullName;
 
-    private String primaryDoctorName;
+    @Indexed(unique = true)
+    private String userId;
+
+    private String primaryDoctorId;
 
     @Indexed(unique = true)
     private String medicalRecordNumber;
@@ -54,12 +57,20 @@ public class PatientDocument {
         this.fullName = fullName;
     }
 
-    public String getPrimaryDoctorName() {
-        return primaryDoctorName;
+    public String getUserId() {
+        return userId;
     }
 
-    public void setPrimaryDoctorName(String primaryDoctorName) {
-        this.primaryDoctorName = primaryDoctorName;
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
+
+    public String getPrimaryDoctorId() {
+        return primaryDoctorId;
+    }
+
+    public void setPrimaryDoctorId(String primaryDoctorId) {
+        this.primaryDoctorId = primaryDoctorId;
     }
 
     public String getMedicalRecordNumber() {
@@ -125,4 +136,5 @@ public class PatientDocument {
     public void setUpdatedAt(Instant updatedAt) {
         this.updatedAt = updatedAt;
     }
+
 }
